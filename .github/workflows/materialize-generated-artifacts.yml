@@ -1,51 +1,13 @@
-name: Diagnose publication bootstrap
+name: Materialize publication reproducibility package
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'bootstrap/**'
-      - '.github/workflows/materialize-generated-artifacts.yml'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  diagnose:
+  placeholder:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Diagnose existing bootstrap encodings
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import base64, gzip
-          def clean(pattern):
-              s=''.join(p.read_text() for p in sorted(Path('bootstrap').glob(pattern)))
-              return ''.join(ch for ch in s if ch.isalnum() or ch in '+/=')
-          t=clean('text_payload.part*.b64')
-          s=clean('seg*.b64')
-          print('text_len',len(t),'mod4',len(t)%4)
-          print('seg_len',len(s),'mod4',len(s)%4)
-          n=0
-          for a,b in zip(t,s):
-              if a!=b: break
-              n+=1
-          print('common_prefix',n,'seg_is_prefix',t.startswith(s))
-          for name,x in [('text',t),('seg',s)]:
-              y=x + '='*((-len(x))%4)
-              try:
-                  raw=base64.b64decode(y,validate=False)
-                  print(name,'decoded_bytes',len(raw),'head',raw[:8].hex())
-                  try:
-                      data=gzip.decompress(raw)
-                      print(name,'GZIP_OK',len(data))
-                  except Exception as e:
-                      print(name,'GZIP_FAIL',repr(e))
-              except Exception as e:
-                  print(name,'BASE64_FAIL',repr(e))
-          if t.startswith(s):
-              print('TAIL_FROM_TEXT_LEN',len(t)-len(s))
-          PY
+      - run: echo "Waiting for complete bootstrap payload."
