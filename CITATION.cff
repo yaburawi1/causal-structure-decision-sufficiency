@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+title: "When Is Causal Structure Enough? Decision Sufficiency of Binary Structural Evidence in Educational AI"
+message: "If you use this repository, please cite the associated manuscript."
+type: software
+authors:
+  - family-names: "Aburawi"
+    given-names: "Yousef Abdurahman"
+    email: "yaburawi@it.misuratau.edu.ly"
+    affiliation: "Faculty of Information Technology, Misurata University"
+  - family-names: "Sullabi"
+    given-names: "Mohamed Ahmed"
+    affiliation: "Faculty of Information Technology, Misurata University"
+repository-code: "https://github.com/yaburawi1/causal-structure-decision-sufficiency"
+license: "NOASSERTION"
