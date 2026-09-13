@@ -127,6 +127,10 @@ classification.
 
 Citation metadata are provided in `CITATION.cff`.
 
-## Licensing status
+## Licensing
 
-Licensing information will be finalized before the archival release.
+Source code in this repository is licensed under the MIT License; see `LICENSE-CODE`.
+
+Documentation, figures, supplementary materials, and author-generated synthetic data are licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0); see `LICENSE-CONTENT`.
+
+Third-party benchmark data are not redistributed by this repository and remain subject to their original terms and licenses.
