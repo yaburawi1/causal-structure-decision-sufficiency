@@ -1,0 +1,7 @@
+environment_id,estimator,n,exact_zero_gt_count,unique_gt_effect_count,std_tau_gt_ddof0,iqr_tau_gt,spearman,pearson,interpretation
+EXT0,B2A,40,33,8,0.06097111751941308,0.0,0.6623059381602482,0.9832227630336093,descriptive_tie_and_range_diagnostic_only
+EXT1,B2A,40,34,7,0.05289926092122609,0.0,0.6213071012561298,0.9547051504997237,descriptive_tie_and_range_diagnostic_only
+EXT2,B2A,40,23,18,0.07466310910778799,0.0,0.8679721636336934,0.9699924159388125,descriptive_tie_and_range_diagnostic_only
+EXT3,B2A,40,37,4,0.03533961817407261,0.0,0.4567607623212043,0.9016577505014653,descriptive_tie_and_range_diagnostic_only
+EXT4,B2A,40,31,10,0.057237105738280156,0.0,0.6683773023482537,0.9235699842092774,descriptive_tie_and_range_diagnostic_only
+EXT5,B2A,40,0,40,0.10778042187480613,0.21518880579671656,0.930018761726079,0.9840659900243831,descriptive_tie_and_range_diagnostic_only

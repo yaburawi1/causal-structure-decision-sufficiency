@@ -1,0 +1,3 @@
+estimator,n_exact_zero_gt,predicted_positive_count,predicted_negative_count,predicted_exact_zero_count,mean_abs_tau_hat,median_abs_tau_hat,max_abs_tau_hat,availability_note
+B2A,158,73.0,85.0,0,0.014452838216529764,0.011256344708510153,0.07888304368593663,computed_from_canonical_per_query_predictions
+POOLED_RIDGE,158,,,0,0.0036889788552779317,,,partial_from_frozen_aggregate_only; sign_split_median_max_unavailable; no_refit_performed

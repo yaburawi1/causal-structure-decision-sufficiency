@@ -1,65 +1,132 @@
-# When Is Causal Structure Enough?
+# When Is Causal Structure Enough? Decision Sufficiency of Binary Structural Indicators for Pairwise Intervention Choice in Educational AI
 
-Reproducibility materials for the manuscript:
+**Authors:** Yousef Abdurahman Aburawi and Mohamed Ahmed Sullabi
 
-**When Is Causal Structure Enough? Decision Sufficiency of Binary Structural Evidence in Educational AI**
+This repository provides the frozen protocols, publication code, synthetic
+data, canonical results, figures, and supplementary table for the paper. It
+supports audit and reproduction of the reported distinction between binary
+structural indicators, intervention-specific effects, and intervention
+decisions.
 
-**Authors**  
-Yousef Abdurahman Aburawi — Internet Computing Department, Faculty of Information Technology, Misurata University, Misurata, Libya  
-Mohamed Ahmed Sullabi — Computer Science Department, Faculty of Information Technology, Misurata University, Misurata, Libya
-
-## Purpose
-
-This repository is the paper-specific reproducibility package. It is intentionally separated from the wider LENS-C PhD project and contains only material needed to understand, audit, and reproduce the analyses reported in this manuscript.
-
-The paper studies a narrow decision-oriented question: **when can binary structural causal evidence, used by itself, support a pairwise intervention choice?** It distinguishes structural evidence from intervention-specific effect evidence and evaluates both under explicit policy and synthetic-ground-truth boundaries.
-
-## Scientific scope
-
-The repository follows these boundaries:
-
-- Representation is not prerequisite dependency.
-- Structural evidence is not intervention-effect evidence.
-- Intervention-effect evidence is not a decision by itself.
-- Synthetic ground truth validates only within the corresponding benchmark or data-generating process.
-- The study does not claim real-world educational causal truth.
+The scientific boundary is narrow: results concern the tested synthetic
+benchmark and external synthetic data-generating processes. They do not claim
+real-world educational causal validity, and structural indicators are not
+treated as interchangeable with effect evidence or action selection. Binary
+refers to the presence or absence of a structural relation for each
+candidate–outcome pair. The present study evaluates pairwise intervention
+choice; it does not assume that intervention spaces are generally limited to
+two actions. Multi-action intervention choice is outside the current empirical
+scope, and no multi-action experiment is claimed.
 
 ## Repository structure
 
-```text
-configs/         Frozen or publication-facing experiment configuration
-src/             Minimal code required for paper reproduction
-notebooks/       Clean reproduction notebooks, where retained
-results/         Canonical tables and machine-readable reported outputs
-figures/         Reproducible figure assets or generation instructions
-data/            Data provenance and acquisition instructions; no private data
-supplementary/   Supplementary material and supporting diagnostics
+- `configs/`: frozen paper protocols and implementation specification.
+- `data/`: acquisition and local-placement instructions for third-party data.
+- `figures/`: the three manuscript figures.
+- `notebooks/`: publication notebooks for the decision analysis and external
+  synthetic validation.
+- `results/`: canonical inputs, predictions, ground truth, and reported
+  diagnostics.
+- `src/`: audit and deterministic reproduction commands.
+- `supplementary/`: machine-readable Supplementary Table S1 and its notes.
+
+`MANIFEST.csv` inventories every public file except itself. Its hashes cover
+the final publication files and intentionally avoid recursive self-reference.
+
+## Data acquisition
+
+The repository does not redistribute the NeurIPS 2022 CausalML Challenge,
+“Causal Insights for Learning Paths in Education,” or any other third-party
+archive. Obtain the official public data and keep it locally. Exact identifiers,
+required archive members, and expected placement are documented in
+`data/README.md`.
+
+## Installation
+
+Python 3.11 is required. From the repository root:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-Directories are populated only with paper-relevant artifacts. Development scratch files, unrelated LENS-C stages, private institutional data, and personal data are intentionally excluded.
+## Minimal reproduction workflow
 
-## Data
+1. Obtain the public benchmark archives described in `data/README.md`.
 
-The primary analysis uses the publicly released **NeurIPS 2022 Causal Insights for Learning Paths in Education** benchmark. External validation uses author-generated synthetic dynamic causal environments.
+2. Audit all archived reported values:
 
-This repository will not redistribute third-party benchmark data unless its license explicitly permits redistribution. Where redistribution is inappropriate, `data/README.md` will provide provenance and acquisition instructions instead.
+   ```bash
+   python src/audit_reported_results.py
+   ```
 
-## Reproducibility status
+3. Reproduce the structural bootstrap and paired comparison:
 
-This repository is being prepared as the archival companion to the manuscript. Canonical analysis artifacts and the minimal reproduction path will be added before journal submission is finalized.
+   ```bash
+   python src/reproduce_structural_bootstrap.py
+   ```
 
-The intended reproduction principle is **one canonical path per reported analysis**, with fixed configuration and no post-hoc retuning hidden from the reader.
+4. Reproduce Method-D sensitivity from the official Task-1 archive:
+
+   ```bash
+   python src/reproduce_method_d_sensitivity.py \
+     --task1-zip /path/to/Task_1_local_public.zip
+   ```
+
+5. Reproduce the secondary Pooled Ridge comparison:
+
+   ```bash
+   python src/reproduce_pooled_ridge.py
+   ```
+
+6. Regenerate and compare the complete external-synthetic workflow in an
+   isolated temporary directory:
+
+   ```bash
+   python src/verify_external_reproducibility.py
+   ```
+
+7. Regenerate all manuscript figures:
+
+   ```bash
+   python src/make_figures.py
+   ```
+
+The decision-analysis notebook additionally requires both official public
+Task-1 and Task-2 archives in the local locations described in
+`data/README.md`. Notebook outputs and execution counts are intentionally
+cleared in the repository.
+
+## Reported-output audit
+
+`src/audit_reported_results.py` checks the direct and ancestry decision counts,
+regrets, bootstrap metadata, paired comparison, Method-D sensitivity grid,
+external B2A errors, zero/nonzero diagnostics, sign result, Pooled Ridge
+aggregate, and Supplementary Table S1. The external reproducibility utility
+executes the publication notebook in isolation and compares regenerated
+scientific content with the archived artifacts while ignoring non-scientific
+packaging metadata.
+
+## Figures and tables
+
+| Item | Public producer or audit |
+|---|---|
+| Figure 1 | `src/make_figures.py`; `configs/DECISION_PROTOCOL_V1.md` |
+| Figure 2 | `src/make_figures.py`; direct and ancestry query-level results |
+| Figure 3 | `src/make_figures.py`; structural-transition results |
+| Table 1 | decision notebook; `src/reproduce_structural_bootstrap.py` |
+| Table 2 | `src/reproduce_method_d_sensitivity.py` |
+| Table 3 | external notebook; `src/audit_reported_results.py`; `src/reproduce_pooled_ridge.py` |
+| Supplementary Table S1 | `supplementary/table_s1_environment_level_diagnostics.csv` |
+
+See `REPRODUCIBILITY_MAP.md` for the complete artifact mapping and
+classification.
 
 ## Citation
 
-Citation metadata are provided in [`CITATION.cff`](CITATION.cff). The final journal citation and DOI will be added after publication.
+Citation metadata are provided in `CITATION.cff`.
 
-## Correspondence
+## Licensing status
 
-Yousef Abdurahman Aburawi  
-Faculty of Information Technology, Misurata University  
-Email: yaburawi@it.misuratau.edu.ly
-
-## License
-
-A repository license will be added after the authors confirm the licensing choice for code and author-generated materials. Third-party data remain subject to their original licenses.
+Licensing information will be finalized before the archival release.

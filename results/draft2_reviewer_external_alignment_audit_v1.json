@@ -1,0 +1,235 @@
+{
+  "action_assignment": {
+    "all_actions_support_count_ge_100": true,
+    "boundary": "This does not imply real-world ignorability.",
+    "dirichlet_parameters": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "environment_support_audit": [
+      {
+        "action_probabilities": [
+          0.08637698414860923,
+          0.0487938966731669,
+          0.3339257312348638,
+          0.1370851474205837,
+          0.04128287974338845,
+          0.11182569282112127,
+          0.09015099223398022,
+          0.1505586757242865
+        ],
+        "aligned_rows": 42800,
+        "all_actions_support_count_ge_100": true,
+        "environment_id": "EXT0",
+        "maximum_observed_action_count": 14275,
+        "minimum_observed_action_count": 1722,
+        "support_counts": [
+          3663,
+          2095,
+          14275,
+          5955,
+          1722,
+          4720,
+          3853,
+          6517
+        ]
+      },
+      {
+        "action_probabilities": [
+          0.08355864704014956,
+          0.11878717590266637,
+          0.14284960617816564,
+          0.14897135116143173,
+          0.26094853147655295,
+          0.11911883347274298,
+          0.03,
+          0.09576585476829076
+        ],
+        "aligned_rows": 42800,
+        "all_actions_support_count_ge_100": true,
+        "environment_id": "EXT1",
+        "maximum_observed_action_count": 11329,
+        "minimum_observed_action_count": 1272,
+        "support_counts": [
+          3544,
+          5048,
+          6008,
+          6382,
+          11329,
+          5124,
+          1272,
+          4093
+        ]
+      },
+      {
+        "action_probabilities": [
+          0.11386331233037193,
+          0.102060108647777,
+          0.0368303229207775,
+          0.10237303864036393,
+          0.2455909076384688,
+          0.13654911923980156,
+          0.14872387483310706,
+          0.1140093157493323
+        ],
+        "aligned_rows": 42800,
+        "all_actions_support_count_ge_100": true,
+        "environment_id": "EXT2",
+        "maximum_observed_action_count": 10544,
+        "minimum_observed_action_count": 1541,
+        "support_counts": [
+          4845,
+          4415,
+          1541,
+          4326,
+          10544,
+          5814,
+          6449,
+          4866
+        ]
+      },
+      {
+        "action_probabilities": [
+          0.14039910099960984,
+          0.11552827318844575,
+          0.3476011501430448,
+          0.09375048492855464,
+          0.03,
+          0.11181874521491242,
+          0.0432678925196018,
+          0.1176343530058307
+        ],
+        "aligned_rows": 42800,
+        "all_actions_support_count_ge_100": true,
+        "environment_id": "EXT3",
+        "maximum_observed_action_count": 14932,
+        "minimum_observed_action_count": 1274,
+        "support_counts": [
+          5992,
+          4891,
+          14932,
+          3978,
+          1274,
+          4823,
+          1878,
+          5032
+        ]
+      },
+      {
+        "action_probabilities": [
+          0.14801196824241974,
+          0.10443933457406915,
+          0.14497013874719905,
+          0.036315017701503825,
+          0.2780197861394865,
+          0.10239074959143905,
+          0.15585300500388263,
+          0.03
+        ],
+        "aligned_rows": 42800,
+        "all_actions_support_count_ge_100": true,
+        "environment_id": "EXT4",
+        "maximum_observed_action_count": 12010,
+        "minimum_observed_action_count": 1280,
+        "support_counts": [
+          6286,
+          4484,
+          6282,
+          1558,
+          12010,
+          4264,
+          6636,
+          1280
+        ]
+      },
+      {
+        "action_probabilities": [
+          0.09218173355229,
+          0.17354869830610586,
+          0.18029778860189175,
+          0.03,
+          0.05226202771547088,
+          0.12124843931509018,
+          0.18245676141729505,
+          0.16800455109185633
+        ],
+        "aligned_rows": 42800,
+        "all_actions_support_count_ge_100": true,
+        "environment_id": "EXT5",
+        "maximum_observed_action_count": 7884,
+        "minimum_observed_action_count": 1255,
+        "support_counts": [
+          3862,
+          7430,
+          7884,
+          1255,
+          2191,
+          5209,
+          7751,
+          7218
+        ]
+      }
+    ],
+    "floor_algorithm": "p_i=0.03+(1-8*0.03)*max(raw_i-0.03,0)/sum_j(max(raw_j-0.03,0))",
+    "identification_implication": "No state-dependent treatment confounding is introduced by the behavior policy.",
+    "probability_floor": 0.03,
+    "randomized_with_respect_to_state": true,
+    "state_independent": true
+  },
+  "alignment_status": "correct",
+  "audit_type": "verification_not_new_experiment",
+  "b2a_alignment": {
+    "A[t+1]_gt_handling": "marginalized_under_frozen_state_independent_policy_and_shared_between_paired_worlds",
+    "A[t+1]_in_features": false,
+    "features": [
+      "X[t-1]",
+      "A[t]"
+    ],
+    "matches_frozen_benchmark_style_estimand": true,
+    "target": "X[t+2]"
+  },
+  "conditioning_state_index": "X[t-1]",
+  "evidence_sources": [
+    "configs/B2A_EXTERNAL_SYNTHETIC_VALIDATION_PROTOCOL_V1_1.md",
+    "configs/B2A_EXTERNAL_SYNTHETIC_IMPLEMENTATION_SPEC_V1.md",
+    "notebooks/b2a_external_synthetic_validation.ipynb",
+    "results/b2a_external_synthetic_dgp_spec_v1.json"
+  ],
+  "intervention_index": "A[t]",
+  "nuisance_action_indices": [
+    "A[t-1]",
+    "A[t+1]"
+  ],
+  "paired_world_coupling": {
+    "exogenous_noise_all_three_transitions_shared": true,
+    "nuisance_actions_shared": true,
+    "only_difference": "A[t] is I in intervention world and R in reference world",
+    "paired_draws_per_query": 500
+  },
+  "required_manuscript_statement": "Alignment is correct; manuscript explanation was insufficient.",
+  "schema_version": "draft2_reviewer_external_alignment_audit_v1",
+  "target_index": "X[t+2,Y]",
+  "timeline": [
+    {
+      "action": "A[t-1] nuisance",
+      "next_state": "X[t]",
+      "state": "X[t-1]"
+    },
+    {
+      "action": "A[t] = I or R intervention",
+      "next_state": "X[t+1]",
+      "state": "X[t]"
+    },
+    {
+      "action": "A[t+1] nuisance",
+      "next_state": "X[t+2]",
+      "state": "X[t+1]"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+.DS_Store
+*.log
+*.zip
+
+# Third-party benchmark data must remain local.
+data/Task_1_local_public.zip
+data/Task_2_local_public.zip
+data/neurips-2022-causal-education/

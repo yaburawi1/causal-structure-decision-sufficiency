@@ -1,0 +1,27 @@
+{
+  "artifacts": [
+    {
+      "byte_size": 114743,
+      "relative_path": "results/b2a_external_synthetic_dgp_spec_v1.json",
+      "scientific_payload_sha256": "95884a97bda259755d751ac597b172c0ec17878d0767ad7279bb61df39b7cca0",
+      "stage": "A"
+    },
+    {
+      "byte_size": 101110,
+      "relative_path": "results/b2a_external_synthetic_queries_v1.csv",
+      "scientific_payload_sha256": "d0c022193284c495751b7168d62db8206a397f02537e54ca2e165a0248b83d6b",
+      "stage": "A"
+    },
+    {
+      "byte_size": 44243811,
+      "relative_path": "results/b2a_external_synthetic_training_v1.npz",
+      "scientific_payload_sha256": "f215ab76c2106a0971f9353630b47c430477c105e858cf79adaff6fb806bd838",
+      "stage": "A"
+    }
+  ],
+  "implementation_spec_version": "B2A_EXTERNAL_SYNTHETIC_IMPLEMENTATION_SPEC_V1",
+  "protocol_version": "B2A_EXTERNAL_SYNTHETIC_VALIDATION_PROTOCOL_V1_1",
+  "schema_version": "b2a_external_synthetic_manifest_v1",
+  "self_hash_included": false,
+  "stage": "A"
+}

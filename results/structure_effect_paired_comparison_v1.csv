@@ -1,0 +1,9 @@
+policy,metric,difference_definition,gt_estimate,method_d_estimate,delta_gt_minus_method_d,bootstrap_ci_low,bootstrap_ci_high,bootstrap_replicates,valid_bootstrap_replicates,bootstrap_seed,resampling
+DIRECT,coverage,GT_minus_Method_D,0.46,0.26,0.2,0.06,0.33999999999999997,10000,10000,20260910,paired_query_indices_within_environment
+DIRECT,ambiguity_rate,GT_minus_Method_D,0.54,0.74,-0.19999999999999996,-0.33999999999999997,-0.06000000000000005,10000,10000,20260910,paired_query_indices_within_environment
+DIRECT,misleading_rate,GT_minus_Method_D,0.2,0.14,0.06,-0.020000000000000018,0.15999999999999998,10000,10000,20260910,paired_query_indices_within_environment
+DIRECT,mean_selective_regret,GT_minus_Method_D,0.04144105494918368,0.044543247420893654,-0.0031021924717099733,-0.035718883932106586,0.030770129432289024,10000,10000,20260910,paired_query_indices_within_environment
+PATH,coverage,GT_minus_Method_D,0.36,0.44,-0.08000000000000002,-0.21999999999999997,0.040000000000000036,10000,10000,20260910,paired_query_indices_within_environment
+PATH,ambiguity_rate,GT_minus_Method_D,0.64,0.56,0.07999999999999996,-0.040000000000000036,0.21999999999999997,10000,10000,20260910,paired_query_indices_within_environment
+PATH,misleading_rate,GT_minus_Method_D,0.26,0.34,-0.08000000000000002,-0.16000000000000003,0.0,10000,10000,20260910,paired_query_indices_within_environment
+PATH,mean_selective_regret,GT_minus_Method_D,0.09585784664103579,0.07070392207077919,0.0251539245702566,-0.004201523043375059,0.06243673147768264,10000,10000,20260910,paired_query_indices_within_environment

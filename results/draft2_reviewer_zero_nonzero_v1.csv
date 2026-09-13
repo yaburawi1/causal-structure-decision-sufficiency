@@ -1,0 +1,7 @@
+estimator,stratum,n,mae,rmse,pearson,spearman,exact_sign_agreement,mean_abs_prediction,mean_abs_gt,gt_positive_count,gt_negative_count,directional_sign_agreement,availability_note
+ZERO,EXACT_ZERO,158,0.0,0.0,,,1.0,0.0,0.0,,,,computed_from_canonical_per_query_predictions
+ZERO,NONZERO,82,0.11290628468250648,0.11903931573011371,,,0.0,0.0,0.11290628468250648,33.0,49.0,0.0,computed_from_canonical_per_query_predictions
+B2A,EXACT_ZERO,158,0.014452838216529764,0.019450485703440837,,,0.0,0.014452838216529764,0.0,,,,computed_from_canonical_per_query_predictions
+B2A,NONZERO,82,0.015624448384963737,0.018970294745101167,0.9882345609486735,0.969765239821073,1.0,0.11436301321189284,0.11290628468250648,33.0,49.0,1.0,computed_from_canonical_per_query_predictions
+POOLED_RIDGE,EXACT_ZERO,158,0.0036889788552779317,,,,0.0,0.0036889788552779317,0.0,,,,partial_from_frozen_aggregate_only; per_query_pooled_ridge_predictions_not_persisted; no_refit_performed
+POOLED_RIDGE,NONZERO,82,0.006106597326392786,,,,1.0,,0.11290628468250648,33.0,49.0,1.0,partial_from_frozen_aggregate_only; per_query_pooled_ridge_predictions_not_persisted; no_refit_performed
