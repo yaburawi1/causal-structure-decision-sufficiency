@@ -1,0 +1,132 @@
+name: Materialize publication reproducibility package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bootstrap/**'
+      - '.github/workflows/materialize-generated-artifacts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Detect bootstrap or missing binary artifacts
+        id: detect
+        shell: bash
+        run: |
+          if compgen -G "bootstrap/seg*.b64" > /dev/null; then
+            echo "bootstrap=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "bootstrap=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [[ -f results/b2a_external_synthetic_training_v1.npz \
+             && -f figures/figure_1_structure_vs_effect.png \
+             && -f figures/figure_2_decision_states.png \
+             && -f figures/figure_3_transition_matrices.png ]]; then
+            echo "binary_needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "binary_needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Materialize audited text package
+        if: steps.detect.outputs.bootstrap == 'true'
+        shell: bash
+        run: |
+          python - <<'PYCODE'
+          from pathlib import Path
+          import shutil
+          root = Path.cwd()
+          for child in list(root.iterdir()):
+              if child.name in {'.git', '.github', 'bootstrap'}:
+                  continue
+              if child.is_dir():
+                  shutil.rmtree(child)
+              else:
+                  child.unlink()
+          PYCODE
+          cat bootstrap/seg*.b64 | tr -d '\n\r ' | base64 --decode | tar -xzf -
+          rm -rf bootstrap
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pinned dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Regenerate and validate external synthetic training archive
+        shell: bash
+        run: |
+          python src/verify_external_reproducibility.py
+
+      - name: Regenerate figures
+        run: python src/make_figures.py
+
+      - name: Refresh binary hashes in public manifest
+        shell: bash
+        run: |
+          python - <<'PYCODE'
+          from pathlib import Path
+          import csv, hashlib
+          root = Path('.')
+          manifest = root / 'MANIFEST.csv'
+          rows = list(csv.DictReader(manifest.open(newline='', encoding='utf-8')))
+          fields = rows[0].keys() if rows else []
+          for row in rows:
+              p = root / row['public_path']
+              if p.exists() and p.is_file():
+                  row['sha256'] = hashlib.sha256(p.read_bytes()).hexdigest()
+          with manifest.open('w', newline='', encoding='utf-8') as f:
+              w = csv.DictWriter(f, fieldnames=fields)
+              w.writeheader(); w.writerows(rows)
+          PYCODE
+
+      - name: Validate reported values and public manifest
+        shell: bash
+        run: |
+          python src/audit_reported_results.py
+          python src/reproduce_structural_bootstrap.py
+          python src/reproduce_pooled_ridge.py
+          python - <<'PYCODE'
+          from pathlib import Path
+          import csv, hashlib
+          root = Path('.')
+          rows = list(csv.DictReader((root/'MANIFEST.csv').open(newline='', encoding='utf-8')))
+          listed = {r['public_path']: r['sha256'] for r in rows}
+          actual = []
+          for p in root.rglob('*'):
+              if not p.is_file():
+                  continue
+              rel = p.as_posix()
+              if rel.startswith('.git/') or rel.startswith('.github/') or rel == 'MANIFEST.csv':
+                  continue
+              actual.append(rel)
+          missing = sorted(set(actual) - set(listed))
+          extra = sorted(set(listed) - set(actual))
+          bad = [rel for rel in sorted(set(actual) & set(listed)) if hashlib.sha256((root/rel).read_bytes()).hexdigest() != listed[rel]]
+          if missing or extra or bad:
+              raise SystemExit(f'Manifest mismatch: missing={missing} extra={extra} bad={bad}')
+          print(f'MANIFEST PASS rows={len(rows)} files={len(actual)}')
+          PYCODE
+
+      - name: Commit materialized package
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Publish audited reproducibility package"
+            git push
+          fi
