@@ -1,0 +1,212 @@
+name: Materialize publication reproducibility package
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Detect bootstrap or missing binary artifacts
+        id: need
+        shell: bash
+        run: |
+          if compgen -G "bootstrap/text_payload.part*.b64" > /dev/null; then
+            echo "bootstrap=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "bootstrap=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [[ -f results/b2a_external_synthetic_training_v1.npz \
+             && -f figures/figure_1_structure_vs_effect.png \
+             && -f figures/figure_2_decision_states.png \
+             && -f figures/figure_3_transition_matrices.png ]]; then
+            echo "binary_needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "binary_needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Materialize audited text package
+        if: steps.need.outputs.bootstrap == 'true'
+        shell: bash
+        run: |
+          python - <<'PYCODE'
+          from pathlib import Path
+          import shutil
+
+          root = Path.cwd()
+          for child in list(root.iterdir()):
+              if child.name in {".git", ".github", "bootstrap"}:
+                  continue
+              if child.is_dir():
+                  shutil.rmtree(child)
+              else:
+                  child.unlink()
+          PYCODE
+          cat bootstrap/text_payload.part*.b64 | base64 --decode | tar -xzf -
+          rm -rf bootstrap
+
+      - name: Set up Python 3.11
+        if: steps.need.outputs.bootstrap == 'true' || steps.need.outputs.binary_needed == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pinned dependencies
+        if: steps.need.outputs.bootstrap == 'true' || steps.need.outputs.binary_needed == 'true'
+        run: python -m pip install -r requirements.txt
+
+      - name: Regenerate and validate external synthetic training archive
+        if: steps.need.outputs.bootstrap == 'true' || steps.need.outputs.binary_needed == 'true'
+        shell: bash
+        run: |
+          python - <<'PYCODE'
+          from pathlib import Path
+          import json
+          import shutil
+          import tempfile
+
+          import nbformat
+          from nbclient import NotebookClient
+
+          from src.verify_external_reproducibility import (
+              GENERATED_FILES,
+              compare_csv_files,
+              compare_dgp,
+              training_scientific_sha256,
+          )
+
+          root = Path.cwd()
+          archived_results = root / "results"
+          archived_manifest = json.loads(
+              (archived_results / "b2a_external_synthetic_manifest_v1.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          expected_training_hash = next(
+              record["scientific_payload_sha256"]
+              for record in archived_manifest["artifacts"]
+              if record["relative_path"]
+              == "results/b2a_external_synthetic_training_v1.npz"
+          )
+
+          with tempfile.TemporaryDirectory(prefix="github-materialize-") as td:
+              work = Path(td)
+              for directory in ("configs", "notebooks", "results"):
+                  shutil.copytree(root / directory, work / directory)
+              for filename in GENERATED_FILES:
+                  path = work / "results" / filename
+                  if path.exists():
+                      path.unlink()
+
+              notebook_path = work / "notebooks" / "b2a_external_synthetic_validation.ipynb"
+              notebook = nbformat.read(notebook_path, as_version=4)
+              NotebookClient(
+                  notebook,
+                  timeout=1800,
+                  kernel_name="python3",
+                  resources={"metadata": {"path": str(work)}},
+              ).execute()
+
+              regenerated = work / "results"
+              compare_dgp(regenerated)
+              compare_csv_files(regenerated)
+
+              generated_training = regenerated / "b2a_external_synthetic_training_v1.npz"
+              actual_training_hash = training_scientific_sha256(generated_training)
+              assert actual_training_hash == expected_training_hash, (
+                  actual_training_hash,
+                  expected_training_hash,
+              )
+              shutil.copy2(
+                  generated_training,
+                  archived_results / "b2a_external_synthetic_training_v1.npz",
+              )
+
+          print("PASS: regenerated training arrays match the frozen scientific hash.")
+          PYCODE
+
+      - name: Regenerate figures
+        if: steps.need.outputs.bootstrap == 'true' || steps.need.outputs.binary_needed == 'true'
+        run: python src/make_figures.py
+
+      - name: Refresh binary hashes in public manifest
+        if: steps.need.outputs.bootstrap == 'true' || steps.need.outputs.binary_needed == 'true'
+        shell: bash
+        run: |
+          python - <<'PYCODE'
+          from pathlib import Path
+          import csv
+          import hashlib
+
+          root = Path.cwd()
+          manifest_path = root / "MANIFEST.csv"
+          binary_paths = {
+              "results/b2a_external_synthetic_training_v1.npz",
+              "figures/figure_1_structure_vs_effect.png",
+              "figures/figure_2_decision_states.png",
+              "figures/figure_3_transition_matrices.png",
+          }
+
+          with manifest_path.open(encoding="utf-8", newline="") as f:
+              reader = csv.DictReader(f)
+              rows = list(reader)
+              fields = reader.fieldnames
+
+          for row in rows:
+              if row["public_path"] in binary_paths:
+                  row["sha256"] = hashlib.sha256(
+                      (root / row["public_path"]).read_bytes()
+                  ).hexdigest()
+
+          with manifest_path.open("w", encoding="utf-8", newline="") as f:
+              writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
+              writer.writeheader()
+              writer.writerows(rows)
+          PYCODE
+
+      - name: Validate reported values and public manifest
+        if: steps.need.outputs.bootstrap == 'true' || steps.need.outputs.binary_needed == 'true'
+        shell: bash
+        run: |
+          python src/audit_reported_results.py
+          python - <<'PYCODE'
+          from pathlib import Path
+          import csv
+          import hashlib
+
+          root = Path.cwd()
+          rows = list(csv.DictReader((root / "MANIFEST.csv").open(encoding="utf-8")))
+          listed = {row["public_path"] for row in rows}
+          files = {
+              path.relative_to(root).as_posix()
+              for path in root.rglob("*")
+              if path.is_file() and ".git" not in path.parts and path.name != "MANIFEST.csv"
+          }
+          assert listed == files, (sorted(files - listed), sorted(listed - files))
+          for row in rows:
+              actual = hashlib.sha256((root / row["public_path"]).read_bytes()).hexdigest()
+              assert actual == row["sha256"], row["public_path"]
+          print(f"PASS: manifest validates {len(rows)} public files.")
+          PYCODE
+
+      - name: Commit materialized package
+        if: steps.need.outputs.bootstrap == 'true' || steps.need.outputs.binary_needed == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No repository changes to commit."
+          else
+            git commit -m "Materialize publication reproducibility package [binary-materialized]"
+            git push
+          fi
